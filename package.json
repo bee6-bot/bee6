@@ -1,0 +1,32 @@
+{
+  "name": "discordjs-template",
+  "version": "1.0.0",
+  "description": "A very cool template to start your discord.js bot!",
+  "main": "src/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/main.js | bunyan -o short",
+    "dev": "nodemon src/main.js --ignore 'src/data/*' | bunyan -o short",
+    "format": "prettier --write src/**/*.js",
+    "prepare": "husky install"
+  },
+  "keywords": [],
+  "author": "BeauTheBeau",
+  "license": "MIT",
+  "dependencies": {
+    "bunyan": "^1.8.15",
+    "cli-color": "^2.0.3",
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.3.1",
+    "moment": "^2.29.4",
+    "moment-duration-format": "^2.3.2"
+  },
+  "devDependencies": {
+    "husky": "^8.0.3",
+    "lint-staged": "^15.1.0",
+    "prettier": "3.1.0"
+  },
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
+  }
+}
