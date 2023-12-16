@@ -6,6 +6,9 @@
 // Import handlers
 const loadCommands = require("./commandHandler.js");
 const loadEvents = require("./eventHandler.js");
+const dbHandler = require("./db.js");
+
+const config = require("../../config.js");
 const { Collection } = require("discord.js");
 
 module.exports = async (client) => {
@@ -17,4 +20,5 @@ module.exports = async (client) => {
 
   await loadCommands(client);
   await loadEvents(client);
+  await dbHandler(config);
 };
