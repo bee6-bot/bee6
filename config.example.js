@@ -58,4 +58,22 @@ config.logging.enabled = true;
 config.logging.level = "info";
 config.logging.filePath = "./logs/log.log";
 
+// Database
+// Using MongoDB
+config.database = {};
+config.database.enabled = true;
+config.database.url = "mongodb://localhost:27017";
+config.database.name = "bee6";
+
+config.database.auth = {};
+config.database.auth.enabled = false;
+config.database.auth.username = "";
+config.database.auth.password = "";
+
+// Web server
+config.web = {};
+config.web.enabled = false;
+config.web.port = 8080;
+config.web.host = "localhost";
+
 module.exports = config;
