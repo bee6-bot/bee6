@@ -81,5 +81,6 @@ config.ai = {};
 config.ai.enabled = false;
 config.ai.defaultModel = "orca-mini";
 config.ai.modelFriendlyName = "Orca Mini";
+config.ai.historyLimit = 12; // Set to -1 to disable history limit
 
 module.exports = config;
