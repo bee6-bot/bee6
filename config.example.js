@@ -76,4 +76,10 @@ config.web.enabled = false;
 config.web.port = 8080;
 config.web.host = "localhost";
 
+// AI
+config.ai = {};
+config.ai.enabled = false;
+config.ai.defaultModel = "orca-mini";
+config.ai.modelFriendlyName = "Orca Mini";
+
 module.exports = config;
