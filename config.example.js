@@ -22,6 +22,7 @@ config.bot.owners = [];
 //   See https://discord.com/developers/docs/topics/gateway#list-of-intents
 //   & node_modules/discord-api-types/gateway/v10.d.ts
 config.intents = {};
+config.intents.all = false; // Set to true to enable all intents, overrides config.intents.list
 config.intents.list = [
   GatewayIntentBits.Guilds,
   GatewayIntentBits.GuildMembers,
