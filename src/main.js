@@ -6,7 +6,7 @@
 
 // Dependencies
 let config;
-const { Client } = require("discord.js");
+const { Client, GatewayIntentBits } = require("discord.js");
 const bunyan = require("bunyan");
 const path = require("path");
 require("dotenv").config();
@@ -43,7 +43,9 @@ setupClientAndData()
  */
 async function setupClientAndData() {
   const client = new Client({
-    intents: config.intents.list,
+    intents: config.intents.all
+      ? Object.values(GatewayIntentBits).reduce((a, b) => a | b, 0)
+      : config.intents.list,
     allowedMentions: config.allowedMentions || {
       parse: ["users", "roles"],
       repliedUser: true,
@@ -83,3 +85,11 @@ function setupLogger() {
 }
 
 module.exports = { client, logger };
+
+process.on("unhandledRejection", (err) => {
+  logger.error(err);
+});
+
+process.on("uncaughtException", (err) => {
+  logger.error(err);
+});
