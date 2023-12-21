@@ -101,9 +101,30 @@ module.exports = {
           ephemeral: true,
         });
       }
+    } else if (interaction.isButton()) {
+      const button =
+        client.buttons.get(interaction.customId.split("-")[0]) ||
+        client.buttons.find(
+          (button) => button.data.name === interaction.customId.split("-")[0],
+        );
+      if (!button)
+        return interaction.reply({
+          content: `Sorry, we couldn't find that button`,
+          ephemeral: true,
+        });
+
+      try {
+        await button.execute(client, interaction);
+      } catch (error) {
+        eventLogger.error(error);
+        await interaction.reply({
+          content: "There was an error while executing this button!",
+          ephemeral: true,
+        });
+      }
     } else {
       interaction.reply({
-        content: "This interaction is not a command!",
+        content: "This interaction is not supported",
         ephemeral: true,
       });
     }
