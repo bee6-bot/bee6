@@ -19,6 +19,9 @@ module.exports = {
 
     // If the message mentions the bot, reply
     if (message.mentions.has(client.user.id)) {
+      let typingInterval = setInterval(() => {
+        message.channel.sendTyping();
+      }, 9000);
       let chatHistory = []; // Form a message history for each participant, { role: "user" | "assistant", message: string }[]
       let lastMessage = message;
 
@@ -36,6 +39,8 @@ module.exports = {
           break;
         }
       }
+
+      chatHistory.push({ role: "system", content: config.ai.systemPrompt });
 
       chatHistory.reverse(); // Reverse the array so that the oldest message is first
       chatHistory.push({ role: "user", content: message.content });
@@ -56,10 +61,11 @@ module.exports = {
 
       // Send the request
       const botMessage = await message.reply({
-        content: `:thinking: Thinking...`,
+        content: `:thinking: Thinking...` + `\n\n**Note:** ${config.ai.note}`,
       });
       let responseText = ``;
       let wordCount = 0;
+      message.channel.sendTyping();
 
       try {
         axios(options)
@@ -77,11 +83,16 @@ module.exports = {
                 }
               } else {
                 botMessage.edit({ content: `${responseText}` });
+                clearInterval(typingInterval);
               }
             });
           })
           .catch((error) => {
             console.error(error);
+            botMessage.edit({
+              content: `:x: An error occurred while processing your request.`,
+            });
+            clearInterval(typingInterval);
           });
       } catch (err) {
         console.error(err);
