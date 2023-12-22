@@ -45,8 +45,8 @@ const guildUserSchema = new Schema({
   inventory: { type: Array, default: [] },
 
   // Stats
-  messages: { type: Number, default: 0 },
-  commands: { type: Number, default: 0 },
+  messagesSent: { type: Array, default: [] },
+  commandsUsed: { type: Array, default: [] },
 
   moneyEarned: { type: Number, default: 0 },
   moneySpent: { type: Number, default: 0 },
