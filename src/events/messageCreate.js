@@ -2,104 +2,82 @@
  * @file messageCreate.js
  * @description Handles the messageCreate event and responds with AI-generated text w/ contextual-awareness (kind of)
  */
+const Guild = require("../schemas/guildSchema");
+const { globalUserSchema, guildUserSchema } = require("../schemas/userSchema");
 
-const config = require("../../config.js");
-const axios = require("axios");
-const { EmbedBuilder } = require("discord.js");
-
-async function fetchReply(message) {
-  return await message.channel.messages.fetch(message.reference.messageId);
-}
+const AI = require("./modules/aiMessage.js");
+const {
+  calculateXpGain,
+  calculateNextLevel,
+} = require("./modules/leveling.js");
 
 module.exports = {
   name: "messageCreate",
   async execute(client, message) {
-    // If the message is from a bot, ignore it
     if (message.author.bot) return;
 
-    // If the message mentions the bot, reply
-    if (message.mentions.has(client.user.id)) {
-      let typingInterval = setInterval(() => {
-        message.channel.sendTyping();
-      }, 9000);
-      let chatHistory = []; // Form a message history for each participant, { role: "user" | "assistant", message: string }[]
-      let lastMessage = message;
+    let guild = await Guild.findOne({ guildId: message.guild.id });
+    if (!guild) guild = await Guild.create({ guildId: message.guild.id });
 
-      // Fetch the message history
-      for (let i = 0; i < config.ai.historyLimit; i++) {
-        try {
-          lastMessage = await fetchReply(lastMessage);
-          if (lastMessage.author.bot)
-            chatHistory.push({
-              role: "assistant",
-              content: lastMessage.content,
-            });
-          else chatHistory.push({ role: "user", content: lastMessage.content });
-        } catch (err) {
-          break;
+    let globalUser = await globalUserSchema.findOne({
+      userId: message.author.id,
+    });
+    if (!globalUser)
+      globalUser = await globalUserSchema.create({ userId: message.author.id });
+
+    let user = await guildUserSchema.findOne({
+      user: globalUser._id,
+      guild: guild._id,
+    });
+    if (!user)
+      user = await guildUserSchema.create({
+        user: globalUser._id,
+        guild: guild._id,
+      });
+
+    if (guild.optedIn) {
+      guild.messagesSent.push({
+        time: Date.now(),
+        authorId: message.author.id,
+        channelId: message.channel.id,
+      });
+      await guild.save();
+    }
+
+    if (guild.levelingEnabled) {
+      const xpGain = Math.floor(calculateXpGain(message));
+      const nextLevel = calculateNextLevel(user.level);
+
+      user.messagesSent.push({ time: Date.now(), xp: xpGain });
+      user.xp += xpGain;
+      user.totalXp += xpGain;
+
+      // Check if the user has leveled up
+      if (user.xp >= nextLevel) {
+        user.level++;
+        user.xp -= nextLevel;
+        if (guild.levelUpMessages)
+          message.reply(`You leveled up to level ${user.level}!`);
+      }
+
+      // Check if the user has achieved a leveling role
+      const levelingRoles = guild.levelingRoles;
+      for (let i = 0; i < levelingRoles.length; i++) {
+        if (user.level >= levelingRoles[i].level) {
+          const role = message.guild.roles.cache.get(levelingRoles[i].roleId);
+          if (!role) continue;
+          if (message.member.roles.cache.has(role.id)) continue;
+          try {
+            message.member.roles.add(role);
+          } catch (err) {
+            console.log(err);
+          }
         }
       }
 
-      chatHistory.push({ role: "system", content: config.ai.systemPrompt });
-
-      chatHistory.reverse(); // Reverse the array so that the oldest message is first
-      chatHistory.push({ role: "user", content: message.content });
-
-      // Form the data object
-      const data = {
-        model: config.ai.defaultModel,
-        messages: chatHistory,
-      };
-
-      // Send the request to the API
-      const options = {
-        method: "post",
-        url: "http://localhost:11434/api/chat",
-        data,
-        responseType: "stream",
-      };
-
-      // Send the request
-      const botMessage = await message.reply({
-        content: `:thinking: Thinking...` + `\n\n**Note:** ${config.ai.note}`,
-      });
-      let responseText = ``;
-      let wordCount = 0;
-      message.channel.sendTyping();
-
-      try {
-        axios(options)
-          .then((response) => {
-            response.data.on("data", (chunk) => {
-              const responsePart = JSON.parse(chunk);
-
-              if (!responsePart.done) {
-                responseText += responsePart.message.content;
-                wordCount += responsePart.message.content.split(" ").length;
-
-                if (wordCount >= 10) {
-                  wordCount = 0;
-                  botMessage.edit({ content: `${responseText}` });
-                }
-              } else {
-                botMessage.edit({ content: `${responseText}` });
-                clearInterval(typingInterval);
-              }
-            });
-          })
-          .catch((error) => {
-            console.error(error);
-            botMessage.edit({
-              content: `:x: An error occurred while processing your request.`,
-            });
-            clearInterval(typingInterval);
-          });
-      } catch (err) {
-        console.error(err);
-        botMessage.edit({
-          content: `:x: An error occurred while processing your request.`,
-        });
-      }
+      await user.save();
     }
+
+    await AI(client, message);
   },
 };
