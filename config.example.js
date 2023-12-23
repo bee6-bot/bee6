@@ -5,6 +5,7 @@
  */
 
 const { ActivityType, GatewayIntentBits } = require("discord.js");
+const { readFileSync } = require("fs");
 
 const config = {};
 
@@ -79,9 +80,23 @@ config.web.host = "localhost";
 
 // AI
 config.ai = {};
-config.ai.enabled = false;
+config.ai.historyLimit = 10;
+config.ai.note =
+  "As the conversation gets larger, the AI will take longer to respond.";
+config.ai.systemPrompt = readFileSync("./systemPrompt.txt", "utf-8");
+
+// For locally-hosted AI models
+// See https://ollama.ai/
+config.ai.enabled = true;
 config.ai.defaultModel = "orca-mini";
 config.ai.modelFriendlyName = "Orca Mini";
-config.ai.historyLimit = 12; // Set to -1 to disable history limit
+
+// For the OpenRouter API
+// See https://openrouter.ai
+config.ai.openrouter = {};
+config.ai.openrouter.enabled = true;
+config.ai.openrouter.url = "https://openrouter.dev";
+config.ai.openrouter.defaultModel = "openrouter/auto"; // auto is recommended, for a full list of models see https://openrouter.ai/models
+config.ai.openrouter.token = "";
 
 module.exports = config;
