@@ -122,6 +122,30 @@ module.exports = {
           ephemeral: true,
         });
       }
+    } else if (interaction.isAutocomplete()) {
+      const command = client.commands.get(interaction.commandName);
+      if (!command)
+        return interaction.respond({
+          content: `Sorry, we couldn't find that command`,
+          ephemeral: true,
+        });
+
+      if (command.autocomplete) {
+        try {
+          await command.autocomplete(interaction);
+        } catch (error) {
+          eventLogger.error(error);
+          await interaction.respond({
+            content: "There was an error while executing this autocomplete!",
+            ephemeral: true,
+          });
+        }
+      } else {
+        interaction.respond({
+          content: "This interaction is not supported",
+          ephemeral: true,
+        });
+      }
     } else {
       interaction.reply({
         content: "This interaction is not supported",
