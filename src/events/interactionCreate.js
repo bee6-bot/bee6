@@ -146,6 +146,27 @@ module.exports = {
           ephemeral: true,
         });
       }
+    } else if (interaction.isModalSubmit()) {
+      const modal =
+        client.modals.get(interaction.customId.split("-")[0]) ||
+        client.modals.find(
+          (modal) => modal.data.name === interaction.customId.split("-")[0],
+        );
+      if (!modal)
+        return interaction.reply({
+          content: `Sorry, we couldn't find that modal`,
+          ephemeral: true,
+        });
+
+      try {
+        await modal.execute(client, interaction);
+      } catch (error) {
+        eventLogger.error(error);
+        await interaction.reply({
+          content: "There was an error while executing this modal!",
+          ephemeral: true,
+        });
+      }
     } else {
       interaction.reply({
         content: "This interaction is not supported",

@@ -7,6 +7,7 @@
 const loadCommands = require("./commandHandler.js");
 const loadEvents = require("./eventHandler.js");
 const loadButtons = require("./buttonHandler");
+const loadModals = require("./modalHandler");
 const dbHandler = require("./db.js");
 
 const config = require("../../config.js");
@@ -22,5 +23,6 @@ module.exports = async (client) => {
   await loadCommands(client);
   await loadEvents(client);
   await loadButtons(client);
+  await loadModals(client);
   await dbHandler(config);
 };
