@@ -3,6 +3,37 @@ const config = require("../../../config");
 const axios = require("axios");
 
 /**
+ * Applies a template to a message.
+ * @param client
+ *
+ */
+function applyTemplate(client, template, message) {
+  let templates = {
+    time: new Date().toLocaleTimeString(),
+    guilds: client.guilds.cache.size,
+    users: client.users.cache.size,
+    channels: client.channels.cache.size,
+    channelId: message.channel.id,
+    channel: message.channel.name,
+    guild: message.guild.name,
+    user: message.author.username,
+    bot: config.bot.name,
+    botid: config.bot.id,
+    botversion: config.bot.version,
+    botabout: config.bot.about,
+    developers: config.bot.developers,
+    owners: config.bot.owners,
+  };
+
+  for (let key in templates) {
+    console.log(key, templates[key]);
+    template = template.replace(new RegExp(`{{${key}}}`, "g"), templates[key]);
+  }
+
+  return template;
+}
+
+/**
  * Splits a message into an array of messages, each with a maximum length of 2000 characters
  * @param message
  */
@@ -50,14 +81,17 @@ async function aiMessage(client, message) {
         else
           chatHistory.push({
             role: "user",
-            content: `${lastMessage.author.displayName} says ${lastMessage.content}`,
+            content: `${lastMessage.content}`,
           });
       } catch (err) {
         break;
       }
     }
 
-    chatHistory.push({ role: "system", content: config.ai.systemPrompt });
+    chatHistory.push({
+      role: "system",
+      content: applyTemplate(client, config.ai.systemPrompt, message),
+    });
 
     chatHistory.reverse(); // Reverse the array so that the oldest message is first
     chatHistory.push({ role: "user", content: message.content });
