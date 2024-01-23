@@ -14,8 +14,8 @@ const config = require("../../config.js");
 const { Collection } = require("discord.js");
 
 module.exports = async (client) => {
-  client.modals = new Collection(); // not used
-  client.aliases = new Collection(); // not used
+  client.modals = new Collection();
+  client.aliases = new Collection();
   client.commands = new Collection();
   client.events = new Collection();
   client.buttons = new Collection();
