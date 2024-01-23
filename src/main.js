@@ -13,11 +13,18 @@ require("dotenv").config();
 
 // Check if config.js exists
 try {
-  config = require("./../config");
+  config = require("./../config.js");
 } catch (err) {
-  console.error(
-    "Please rename config.example.js to config.js and fill in the values. Please see docs/CONFIG.md for more information.",
-  );
+  if (err.code === "MODULE_NOT_FOUND")
+    console.error(
+      "config.js not found! Please rename config.example.js to config.js and fill in the values.",
+    );
+  else {
+    console.error("Error while loading config.js!");
+    console.error(err);
+  }
+
+  console.error("Exiting...");
   process.exit(1);
 }
 
