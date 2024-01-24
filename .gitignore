@@ -1,6 +1,7 @@
 ### Project-specific template
 logs/
 config.js
+systemPrompt.txt
 
 ### VisualStudioCode template
 .vscode/*
