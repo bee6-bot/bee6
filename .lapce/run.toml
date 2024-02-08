@@ -1,0 +1,12 @@
+# Configs for the Lapce editor
+# https://lapce.dev/docs/configs
+
+[[configs]]
+name = "dev"
+program = "npm"
+args = ["run", "dev"]
+
+[[configs]]
+name = "start"
+program = "npm"
+args = ["run", "start"]
