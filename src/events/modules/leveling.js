@@ -64,7 +64,6 @@ function calculateXpGain(message) {
   // Update the last message time
   lastMessageTime.set(message.author.id, now);
 
-  console.log(`XP gain: ${xpGain}`);
   return xpGain;
 }
 
