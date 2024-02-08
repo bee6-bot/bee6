@@ -56,10 +56,9 @@ function calculateXpGain(message) {
 
   // Dynamically reduce the xp gain based on the time since the user's last message
   const timeDifference = now - lastTime;
-  if (timeDifference < minTime) {
-    const reductionFactor = timeDifference / minTime;
-    xpGain *= reductionFactor;
-  }
+
+  const reductionFactor = Math.max(0, 1 - timeDifference / minTime);
+  xpGain *= reductionFactor;
 
   // Update the last message time
   lastMessageTime.set(message.author.id, now);
