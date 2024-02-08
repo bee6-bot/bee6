@@ -1,11 +1,94 @@
 /**
  * @file config.example.js
  * @description Example config file for the bot. You should rename this file to config.js and fill in the values.
- * @see @{@link docs/CONFIG.md|CONFIG.md}
+ * @see [CONFIG.md]{@link ./docs/CONFIG.md}
  */
 
 const { ActivityType, GatewayIntentBits } = require("discord.js");
 const { readFileSync } = require("fs");
+
+/**
+ * @typedef {Object} BotConfig
+ * @property {string} name - The name of the bot.
+ * @property {string} about - Brief description of the bot.
+ * @property {string} token - The bot's token (to be filled in).
+ * @property {string} id - The bot's ID (to be filled in).
+ * @property {string} version - The version of the bot.
+ * @property {string[]} developers - Array of developer user IDs.
+ * @property {string[]} owners - Array of bot owner user IDs.
+ */
+
+/**
+ * @typedef {Object} IntentsConfig
+ * @property {boolean} all - Set to true to enable all intents, overrides `list`.
+ * @property {number[]} list - Array of Gateway Intent Bits.
+ */
+
+/**
+ * @typedef {Object} GitHubConfig
+ * @property {boolean} enabled - Whether GitHub integration is enabled.
+ * @property {string} repo - GitHub repository URL.
+ * @property {string} branch - GitHub repository branch.
+ */
+
+/**
+ * @typedef {Object} PresenceConfig
+ * @property {boolean} enabled - Whether presence is enabled.
+ * @property {number} interval - Interval, in milliseconds, between presence changes.
+ * @property {Object[]} list - List of presences to cycle through.
+ */
+
+/**
+ * @typedef {Object} BlacklistConfig
+ * @property {boolean} enabled - Whether blacklist is enabled.
+ * @property {string[]} users - Array of user IDs to be blacklisted.
+ * @property {string[]} guilds - Array of guild IDs to be blacklisted.
+ */
+
+/**
+ * @typedef {Object} LoggingConfig
+ * @property {boolean} enabled - Whether logging is enabled.
+ * @property {string} level - Logging level ('info', 'error', etc.).
+ * @property {string} filePath - File path for logs.
+ */
+
+/**
+ * @typedef {Object} DatabaseConfig
+ * @property {boolean} enabled - Whether the database is enabled.
+ * @property {string} url - MongoDB connection URL.
+ * @property {string} name - MongoDB database name.
+ * @property {Object} auth - Authentication details for the database.
+ */
+
+/**
+ * @typedef {Object} WebConfig
+ * @property {boolean} enabled - Whether the web server is enabled.
+ * @property {number} port - Port for the web server.
+ * @property {string} host - Host for the web server.
+ */
+
+/**
+ * @typedef {Object} AIConfig
+ * @property {number} historyLimit - Limit of AI conversation history.
+ * @property {string} note - Note regarding AI behavior.
+ * @property {string} systemPrompt - System prompt for AI (read from file).
+ * @property {boolean} enabled - Whether AI is enabled.
+ * @property {string} defaultModel - Default AI model.
+ * @property {string} modelFriendlyName - Friendly name for the AI model.
+ */
+
+/**
+ * @typedef {Object} OpenRouterConfig
+ * @property {boolean} enabled - Whether OpenRouter integration is enabled.
+ * @property {string} url - OpenRouter API URL.
+ * @property {string} defaultModel - Default OpenRouter model.
+ * @property {string} token - OpenRouter API token.
+ */
+
+/**
+ * @type {BotConfig | IntentsConfig | GitHubConfig | PresenceConfig | BlacklistConfig
+ *         | LoggingConfig | DatabaseConfig | WebConfig | AIConfig | OpenRouterConfig}
+ */
 
 const config = {};
 
